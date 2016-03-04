@@ -1,3 +1,6 @@
+.git
+.vs
+.gitignore
 **/bin
 **/obj
 **/artifacts
