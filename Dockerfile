@@ -10,7 +10,7 @@ RUN apt-get update \
 			libsqlite3-dev \
 	&& rm -rf /var/lib/apt/lists/*
 
-RUN mkdir /app && mkdir /setup
+RUN mkdir /WebCRUD.vNext && mkdir /setup
 
 # download and install dotnet cli and libuv (libuv is required for Kestrel server to run)
 # on newer ubuntu image libuv can be installed from an apt package, 
@@ -38,7 +38,7 @@ RUN apt-get update \
 # workaround for a bug when using dotnet CLI in docker environment (https://github.com/dotnet/cli/issues/1582)
 ENV LTTNG_UST_REGISTER_TIMEOUT=0
 
-WORKDIR /app
+WORKDIR /WebCRUD.vNext
 
 # install app from github repository download ecessary npm packages and restore nugets
 RUN apt-get update \
