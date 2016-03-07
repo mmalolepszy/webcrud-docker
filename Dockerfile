@@ -10,13 +10,12 @@ RUN apt-get update \
 			libsqlite3-dev \
 	&& rm -rf /var/lib/apt/lists/*
 
-RUN mkdir /WebCRUD.vNext && mkdir /setup
-
 # download and install dotnet cli and libuv (libuv is required for Kestrel server to run)
 # on newer ubuntu image libuv can be installed from an apt package, 
 # but currently dotnet package is not compatible with newer ubuntu
 # after installing clean unnecessary files & packages to save space on image
-RUN apt-get update \
+RUN mkdir /setup \
+	&& apt-get update \
 	&& apt-get install --no-install-recommends -y wget autoconf automake build-essential libtool \
 	&& wget -P /setup https://dotnetcli.blob.core.windows.net/dotnet/beta/Installers/Latest/dotnet-ubuntu-x64.latest.deb \
 	&& wget -P /setup https://github.com/libuv/libuv/archive/v1.8.0.tar.gz \
@@ -38,20 +37,18 @@ RUN apt-get update \
 # workaround for a bug when using dotnet CLI in docker environment (https://github.com/dotnet/cli/issues/1582)
 ENV LTTNG_UST_REGISTER_TIMEOUT=0
 
-WORKDIR /WebCRUD.vNext
-
 # install app from github repository download ecessary npm packages and restore nugets
-RUN apt-get update \
+RUN mkdir /app && mkdir /setup \
+	&& apt-get update \
 	&& apt-get install --no-install-recommends -y git npm \
 	&& ln -s /usr/bin/nodejs /usr/bin/node \
-	&& git clone https://github.com/mmalolepszy/webcrud.git github \
-	&& cp -r github/src/WebCRUD.vNext/. . \
-	&& cp github/NuGet.config . \
-	&& rm -rf github \
-	&& npm install \
-	&& npm install -g bower \
-	&& bower --allow-root install \
-	&& npm uninstall -g bower \
+	&& git clone https://github.com/mmalolepszy/webcrud.git /setup/src \
+	&& cd /setup/src/src/WebCRUD.vNext \
+	&& dotnet restore \
+	&& dotnet publish -o /app -c Release \
+	&& cd / \
+	&& rm -rf /setup \
+	&& rm -rf /root/.nuget \
 	&& apt-get purge -y gyp libc-ares-dev libc-ares2 libjs-node-uuid libpython-stdlib libv8-3.14-dev \
   			libv8-3.14.5 node-abbrev node-ansi node-archy node-async node-block-stream \
   			node-combined-stream node-cookie-jar node-delayed-stream node-forever-agent \
@@ -67,12 +64,9 @@ RUN apt-get update \
   	&& apt-get -y autoremove \
 	&& apt-get -y clean \
 	&& rm -rf /var/lib/apt/lists/* \
-	&& dotnet restore 
-
-# TODO: add app building and minifying css and js
 
 #expose a port on which application will listen
 EXPOSE 5004
 
 #when container starts restore nuget packages and start application
-CMD dotnet run 
+CMD /app/WebCRUD.vNext 
