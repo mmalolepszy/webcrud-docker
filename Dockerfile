@@ -66,7 +66,7 @@ RUN mkdir /app && mkdir /setup \
 	&& rm -rf /var/lib/apt/lists/* \
 
 # set enviroment for application
-ENV ASPNET_ENVIRONMENT=Production
+ENV ASPNETCORE_ENVIRONMENT=Production
 
 #expose a port on which application will listen
 EXPOSE 5004
