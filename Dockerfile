@@ -48,7 +48,7 @@ RUN mkdir /app && mkdir /setup \
 	&& dotnet publish -o /app -c Release \
 	&& cd / \
 	&& rm -rf /setup \
-	&& rm -rf /root/.nuget \
+	&& rm -rf /root/.nuget /root/.cache /root/.npm /root/.local \
 	&& apt-get -qq -y purge gyp libc-ares-dev libc-ares2 libjs-node-uuid libpython-stdlib libv8-3.14-dev \
   			libv8-3.14.5 node-abbrev node-ansi node-archy node-async node-block-stream \
   			node-combined-stream node-cookie-jar node-delayed-stream node-forever-agent \
