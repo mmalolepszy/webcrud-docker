@@ -2,7 +2,7 @@ FROM ubuntu:14.04
 
 MAINTAINER Michal Malolepszy <michal.malolepszy@altkom.pl>
 
-# install necessary packages
+# Install necessary packages.
 RUN apt-get -qq update \
 	&& apt-get -q -y --no-install-recommends install \
 			clang-3.5 libcurl3 libicu52 liblldb-3.6 liblttng-ust0 libssl-dev libunwind8 \
@@ -10,10 +10,10 @@ RUN apt-get -qq update \
 			libsqlite3-dev \
 	&& rm -rf /var/lib/apt/lists/*
 
-# download and install dotnet cli and libuv (libuv is required for Kestrel server to run)
-# on newer ubuntu image libuv can be installed from an apt package, 
-# but currently dotnet package is not compatible with newer ubuntu
-# after installing clean unnecessary files & packages to save space on image
+# Download and install dotnet cli and libuv (libuv is required for Kestrel server to run).
+# On newer ubuntu image libuv can be installed from an apt package, 
+# but currently dotnet package is not compatible with newer ubuntu.
+# After installing clean unnecessary files & packages to save space on image.
 RUN mkdir /setup \
 	&& apt-get -qq update \
 	&& apt-get -q -y --no-install-recommends install wget autoconf automake build-essential libtool \
@@ -34,10 +34,11 @@ RUN mkdir /setup \
 	&& rm -rf /setup \
 	&& rm -rf /var/lib/apt/lists/*
 
-# workaround for a bug when using dotnet CLI in docker environment (https://github.com/dotnet/cli/issues/1582)
+# Workaround for a bug when using dotnet CLI in docker environment (https://github.com/dotnet/cli/issues/1582)
+# NOTE: This will probably be not necessary on next release of docker (1.11.0)
 ENV LTTNG_UST_REGISTER_TIMEOUT=0
 
-# install app from github repository download ecessary npm packages and restore nugets
+# Download app from github repository, restore nugets and publish it to a directory.
 RUN mkdir /app && mkdir /setup \
 	&& apt-get -qq update \
 	&& apt-get -q -y --no-install-recommends install git npm \
@@ -65,11 +66,13 @@ RUN mkdir /app && mkdir /setup \
 	&& apt-get -qq -y clean \
 	&& rm -rf /var/lib/apt/lists/* \
 
-# set enviroment for application
+# Set enviroment for application.
 ENV ASPNETCORE_ENVIRONMENT=Production
 
-#expose a port on which application will listen
+# Expose a port on which application will listen.
 EXPOSE 5004
 
-#when container starts restore nuget packages and start application
-CMD /app/WebCRUD.vNext 
+# Run application when container starts.
+# NOTE: Currently (cli latest for ubuntu - 1.0.0.001793) the executable file produced during compilation  
+# is not starting application directly but it requires path to application dll as parameter.
+CMD /app/WebCRUD.vNext /app/WebCRUD.vNext.dll
