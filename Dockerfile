@@ -17,9 +17,15 @@ RUN apt-get -qq update \
 RUN mkdir /setup \
 	&& apt-get -qq update \
 	&& apt-get -q -y --no-install-recommends install wget autoconf automake build-essential libtool \
-	&& wget -P /setup --progress=dot:mega https://dotnetcli.blob.core.windows.net/dotnet/beta/Installers/Latest/dotnet-ubuntu-x64.latest.deb \
+	&& wget -P /setup --progress=dot:mega \
+		https://dotnetcli.blob.core.windows.net/dotnet/beta/Installers/Latest/dotnet-host-ubuntu-x64.latest.deb \
+		https://dotnetcli.blob.core.windows.net/dotnet/beta/Installers/Latest/dotnet-sharedframework-ubuntu-x64.latest.deb \
+		https://dotnetcli.blob.core.windows.net/dotnet/beta/Installers/Latest/dotnet-sdk-ubuntu-x64.latest.deb \
 	&& wget -P /setup  --progress=dot:binary https://github.com/libuv/libuv/archive/v1.8.0.tar.gz \
-	&& dpkg -i /setup/dotnet-ubuntu-x64.latest.deb \
+	&& dpkg -i \
+		/setup/dotnet-host-ubuntu-x64.latest.deb \
+		/setup/dotnet-sharedframework-ubuntu-x64.latest.deb \
+		/setup/dotnet-sdk-ubuntu-x64.latest.deb \
 	&& tar -zxf /setup/v1.8.0.tar.gz -C /setup \
 	&& cd /setup/libuv-1.8.0 \
 	&& sh autogen.sh && ./configure && make && make install \
