@@ -45,6 +45,7 @@ RUN mkdir /setup \
 ENV LTTNG_UST_REGISTER_TIMEOUT=0
 
 # Download app from github repository, restore nugets and publish it to a directory.
+# Lines 56-59 are a temporary workaround for an issue with dotnet cli: https://github.com/dotnet/cli/issues/2250
 RUN mkdir /app && mkdir /setup \
 	&& apt-get -qq update \
 	&& apt-get -q -y --no-install-recommends install git npm \
@@ -52,6 +53,10 @@ RUN mkdir /app && mkdir /setup \
 	&& git clone https://github.com/mmalolepszy/webcrud.git /setup/webcrud \
 	&& cd /setup/webcrud/src/WebCRUD.vNext \
 	&& dotnet restore -v minimal \
+	&& touch /root/.nuget/packages/runtime.ubuntu.14.04-x64.Microsoft.NETCore.DotNetHost/1.0.0-rc2-00001/runtimes/ubuntu.14.04-x64/native/_._ \
+	&& touch /root/.nuget/packages/runtime.ubuntu.14.04-x64.Microsoft.NETCore.DotNetHostPolicy/1.0.0-rc2-00001/runtimes/ubuntu.14.04-x64/native/_._ \
+	&& touch /root/.nuget/packages/runtime.ubuntu.14.04-x64.Microsoft.NETCore.DotNetHostResolver/1.0.0-rc2-00001/runtimes/ubuntu.14.04-x64/native/_._ \
+	&& touch /root/.nuget/packages/runtime.ubuntu.14.04-x64.runtime.native.System.Net.Security/1.0.1-rc2-23931/runtimes/ubuntu.14.04-x64/native/_._ \
 	&& dotnet publish -o /app -c Release \
 	&& cd / \
 	&& rm -rf /setup \
@@ -70,15 +75,13 @@ RUN mkdir /app && mkdir /setup \
   			python2.7 python2.7-minimal git git-man libcurl3-gnutls liberror-perl \
   	&& apt-get -qq -y autoremove \
 	&& apt-get -qq -y clean \
-	&& rm -rf /var/lib/apt/lists/* \
+	&& rm -rf /var/lib/apt/lists/*
 
 # Set enviroment for application.
-ENV ASPNETCORE_ENVIRONMENT=Production
+ENV ASPNETCORE_ENVIRONMENT Production
 
 # Expose a port on which application will listen.
 EXPOSE 5004
 
 # Run application when container starts.
-# NOTE: Currently (cli latest for ubuntu - 1.0.0.001793) the executable file produced during compilation  
-# is not starting application directly but it requires path to application dll as parameter.
-CMD /app/WebCRUD.vNext /app/WebCRUD.vNext.dll
+CMD /app/WebCRUD.vNext
