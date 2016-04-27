@@ -53,10 +53,6 @@ RUN mkdir /app && mkdir /setup \
 	&& git clone https://github.com/mmalolepszy/webcrud.git /setup/webcrud \
 	&& cd /setup/webcrud/src/WebCRUD.vNext \
 	&& dotnet restore -v minimal \
-	&& touch /root/.nuget/packages/runtime.ubuntu.14.04-x64.Microsoft.NETCore.DotNetHost/1.0.0-rc2-00001/runtimes/ubuntu.14.04-x64/native/_._ \
-	&& touch /root/.nuget/packages/runtime.ubuntu.14.04-x64.Microsoft.NETCore.DotNetHostPolicy/1.0.0-rc2-00001/runtimes/ubuntu.14.04-x64/native/_._ \
-	&& touch /root/.nuget/packages/runtime.ubuntu.14.04-x64.Microsoft.NETCore.DotNetHostResolver/1.0.0-rc2-00001/runtimes/ubuntu.14.04-x64/native/_._ \
-	&& touch /root/.nuget/packages/runtime.ubuntu.14.04-x64.runtime.native.System.Net.Security/1.0.1-rc2-23931/runtimes/ubuntu.14.04-x64/native/_._ \
 	&& dotnet publish -o /app -c Release \
 	&& cd / \
 	&& rm -rf /setup \
@@ -83,5 +79,5 @@ ENV ASPNETCORE_ENVIRONMENT Production
 # Expose a port on which application will listen.
 EXPOSE 5004
 
-# Run application when container starts.
-CMD /app/WebCRUD.vNext
+# Setup an entrypoint for container
+ENTRYPOINT /app/WebCRUD.vNext
