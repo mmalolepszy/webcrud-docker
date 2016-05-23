@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM ubuntu:trusty
 
 MAINTAINER Michal Malolepszy <michal.malolepszy@altkom.pl>
 
@@ -40,12 +40,7 @@ RUN mkdir /setup \
 	&& rm -rf /setup \
 	&& rm -rf /var/lib/apt/lists/*
 
-# Workaround for a bug when using dotnet CLI in docker environment (https://github.com/dotnet/cli/issues/1582)
-# NOTE: This will probably be not necessary on next release of docker (1.11.0)
-ENV LTTNG_UST_REGISTER_TIMEOUT=0
-
 # Download app from github repository, restore nugets and publish it to a directory.
-# Lines 56-59 are a temporary workaround for an issue with dotnet cli: https://github.com/dotnet/cli/issues/2250
 RUN mkdir /app && mkdir /setup \
 	&& apt-get -qq update \
 	&& apt-get -q -y --no-install-recommends install git npm \
